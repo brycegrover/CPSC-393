@@ -1,0 +1,12 @@
+.DS_Store
+
+.Rproj.user/
+*.Rhistory
+*.RData
+*_cache/
+*.html
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+kaggle.json

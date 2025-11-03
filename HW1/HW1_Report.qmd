@@ -1,0 +1,85 @@
+---
+title: "HW1 Technical Report"
+author: "Bryce Grover"
+format: pdf
+editor: visual
+---
+
+```{r}
+#| label: load-packages
+#| message: false
+#| echo: false
+library(tidyverse)
+library(corrplot)
+```
+
+## **Analysis**
+
+#### Pre-processing
+
+The dataset is comprised of eight continuous numeric variables (X1 through X8) used to predict a binary outcome ('Group'). Intitial data cleaning involved removing Null values and z-scoring features so they are on the same scale. Such scaling is essential for model and data comparison. Data was split using a random state, '123', to ensure consistent model results across multiple model executions.
+
+Below are the summary statistics.
+
+```{r}
+#| label: load data, drop (Group) column, and display summary stats
+#| echo: false
+df <- read.csv("https://raw.githubusercontent.com/cmparlettpelleriti/CPSC393ParlettPelleriti/main/Data/hw1.csv")
+
+df <- drop_na(df)
+keeps <- c("X1", "X2", "X3", "X4","X5", "X6", "X7", "X8") #only numeric columns without the predicted variable Group
+df <- df[keeps]
+summary(df)
+```
+
+#### Correlation Matrix
+
+Additionally, the data features seem largely uncorrelated.
+
+```{r}
+#| echo: false
+correlation_matrix <- cor(df)
+corrplot(correlation_matrix, method = "color", type = "upper",
+         tl.col = "black", tl.srt = 45, addCoef.col = "blue")
+
+```
+
+### **Methods**
+
+Three models were developed:
+
+1.  **SVM:** Implemented with a range of kernels, C values, and gamma parameters to find the optimal boundary for class separation. The best kernel was RBF, the best c value was 5, and the best gamma was 0.1. Model ROC/AUC and accuracy was measured to evaluate model performance.
+
+2.  **Logistic Regression:** In addition to SVM, a logistic regression model was trained on the same train-test-split. Model ROC/AUC and accuracy was measured to evaluate model performance.
+
+3.  **KNN:** Finally, a KNN model was fit on the same train-test-split. A GridSearchCV was used to find the optimal number of K's. [The optimal number of K's is 5]{.underline} for this particular train-test-split. Model ROC/AUC and accuracy was measured to evaluate model performance.
+
+### **Results**
+
+The models' performances were assessed using ROC/AUC and accuracy metrics. The selection of the best model for production will depend on its performance according to these standards, which include its ability to accurately make true positive predictions.
+
+#### SVM
+
+1.  *The SMV model training accuracy was 0.85 and the [testing accuracy was 0.74]{.underline}*
+
+2.  *The SMV model [ROC/AUC was 0.85]{.underline}*
+
+#### Logistic Regression
+
+1.  *The LR model training accuracy was 0.76 and the [testing accuracy was 0.78]{.underline}*
+
+2.  *The LR model [ROC/AUC was 0.86]{.underline}*
+
+#### KNN
+
+1.  *The KNN model training accuracy was 0.76 and the [testing accuracy was 0.78]{.underline}*
+
+2.  *The KNN model [ROC/AUC was 0.78]{.underline}*
+
+#### Model Metric Conclusion
+
+The best performing model based on both testing accuracy and ROC/AUC scores was the Logistic Regression model. An ROC/AUC score demonstrates a model's ability to differentiate between true positives and false positives. A score close to 1 is better. The 78% accuracy means that out of every 100 predictions the model makes, 78 are likely to be correct. With an ROC/AUC score of .78, the Logistic Regression model has a good ability to differentiate between true positives and false positives. Given that the Logistic Regression model out-performs both the SVM and KNN models, it is the best choice to implement in production.
+
+### **Reflection**
+
+This was my first time using sklearn pipelines in combination with GridSearchCV create a more optimized model. When I took 392, pipelines weren't used in the curriculum, although we did learn about GridSearchCV when trying to find the optimal hyperparameters of other models. Using both in this homework assignment helped me practice using a more srteamlined work flow.
